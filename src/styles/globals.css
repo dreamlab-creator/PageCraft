@@ -1,0 +1,502 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================================
+ * PageCraft Design Tokens
+ *
+ * Prestige creative-software palette. Restrained, neutral, type-driven.
+ * Three resolved themes: day, night, midnight. System mode resolves to one
+ * of those at runtime in ui-store.ts.
+ * ========================================================================= */
+
+:root {
+  --bg:           #fafaf9;
+  --bg-elev:     #ffffff;
+  --bg-deep:     #f1f0ec;
+  --fg:          #171612;
+  --fg-soft:     #54534c;
+  --fg-muted:    #76746b;
+  --border:      #e6e5e0;
+  --border-soft: #f1f0ec;
+  --accent:      #a8855a;
+  --accent-soft: #c9a87a;
+  --accent-deep: #7d623f;
+  --page-bg:     #ffffff;
+  --page-text:   #0c0b08;
+  --shadow-page: 0 4px 24px -8px rgba(0,0,0,0.18), 0 2px 6px -2px rgba(0,0,0,0.08);
+  --warning:     #b95b1a;
+  --error:       #a13a2e;
+  --ok:          #4d6a3d;
+}
+
+html.theme-day {
+  --bg:           #fafaf9;
+  --bg-elev:     #ffffff;
+  --bg-deep:     #f1f0ec;
+  --fg:          #171612;
+  --fg-soft:     #54534c;
+  --fg-muted:    #76746b;
+  --border:      #e6e5e0;
+  --border-soft: #f1f0ec;
+  --page-bg:     #ffffff;
+  --page-text:   #0c0b08;
+}
+
+html.theme-night {
+  --bg:           #1c1b16;
+  --bg-elev:     #25241e;
+  --bg-deep:     #15140f;
+  --fg:          #f1f0ec;
+  --fg-soft:     #c9c8be;
+  --fg-muted:    #8a877e;
+  --border:      #3a3933;
+  --border-soft: #2a2924;
+  --page-bg:     #2a2924;
+  --page-text:   #f4f4f2;
+  --shadow-page: 0 8px 32px -8px rgba(0,0,0,0.6), 0 2px 8px -2px rgba(0,0,0,0.4);
+}
+
+html.theme-midnight {
+  --bg:           #0c0b08;
+  --bg-elev:     #15140f;
+  --bg-deep:     #060503;
+  --fg:          #f1f0ec;
+  --fg-soft:     #c9c8be;
+  --fg-muted:    #76746b;
+  --border:      #2a2924;
+  --border-soft: #1a1916;
+  --page-bg:     #1a1916;
+  --page-text:   #ece9e0;
+  --shadow-page: 0 8px 32px -8px rgba(0,0,0,0.9), 0 2px 8px -2px rgba(0,0,0,0.7);
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Stable scrollbar gutters so panels don't shift. */
+.scroll-stable {
+  scrollbar-gutter: stable both-edges;
+}
+
+/* Custom scrollbars: thin and restrained. */
+.subtle-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--fg-muted) transparent;
+}
+.subtle-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+.subtle-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.subtle-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--fg-muted);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Selection. */
+::selection {
+  background: rgba(168, 133, 90, 0.25);
+  color: inherit;
+}
+
+/* Focus rings — restrained. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ============================================================================
+ * Screenplay typography — Final Draft 13 / WGA industry standard
+ *
+ * Page geometry, font, and per-element column geometry are calibrated to
+ * Final Draft 13 defaults. The on-screen page looks like a printed page
+ * (white sheet, drop shadow, properly indented columns).
+ *
+ *   - Page:          8.5" x 11"
+ *   - Margins:       1.5" left, 1.0" right, 1.0" top, 1.0" bottom
+ *   - Usable width:  6.0"
+ *   - Font:          Courier Prime 12pt
+ *   - Line metrics:  10 chars/inch horizontal, ~6 lines/inch vertical
+ *   - Element columns (left → right edge, in inches from page left):
+ *       Scene heading: 1.5 → 7.5
+ *       Action:        1.5 → 7.5  (~60 chars/line)
+ *       Character:     3.7 → 7.0  (~33 chars wide, ALL CAPS)
+ *       Dialogue:      2.5 → 6.0  (~35 chars/line)
+ *       Parenthetical: 3.1 → 5.5  (~24 chars/line, no italics)
+ *       Transition:    right-aligned to 7.5
+ *
+ * Vertical rhythm: a blank line above scene headings, action paragraphs,
+ * and character cues; NO blank line between character/parenthetical/
+ * dialogue (they form a contiguous dialogue block).
+ * ========================================================================= */
+
+.screenplay-font {
+  font-family: 'Courier Prime', 'Courier New', Courier, ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12pt;
+  /* 6 lines/inch single-spaced = 12pt font with 12pt leading. line-height 1 keeps that. */
+  line-height: 1;
+  /* Disable kerning/ligatures — keep monospace integrity. */
+  font-feature-settings: "kern" 0, "liga" 0, "clig" 0, "calt" 0;
+  letter-spacing: 0;
+}
+
+/* The page itself — a real visual sheet with FD-style drop shadow. */
+.screenplay-page {
+  background: var(--page-bg);
+  color: var(--page-text);
+  width: 8.5in;
+  min-height: 11in;
+  /* No padding: each element is absolutely positioned by its column anchor.
+     Top margin is enforced by the first element's top spacing. */
+  padding: 1in 1in 1in 1.5in;   /* top, right, bottom, left */
+  box-shadow: var(--shadow-page);
+  position: relative;
+  /* Crisp printed-paper feel: subtle border in dark themes so the page
+     edge is legible against the background. */
+  outline: 1px solid var(--border-soft);
+}
+
+/* Page number, top right, 0.5" from top, 1.0" from right edge — Final Draft default. */
+.screenplay-page__page-number {
+  position: absolute;
+  top: 0.5in;
+  right: 1in;
+  font-family: 'Courier Prime', 'Courier New', Courier, monospace;
+  font-size: 12pt;
+  color: var(--page-text);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Base element styling. Every element is a block aligned to its column. */
+.sp-element {
+  white-space: pre-wrap;
+  word-break: normal;
+  overflow-wrap: break-word;
+  margin: 0;
+  /* Default column = ACTION (1.5" → 7.5", which is the page's content box).
+     Element-specific selectors below override left/right margins. */
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0;
+}
+
+/* The contenteditable inside each block. */
+.sp-element > [contenteditable] {
+  min-height: 1em;        /* one line height even when empty */
+  white-space: pre-wrap;
+  word-break: normal;
+  overflow-wrap: break-word;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  /* The block-level element provides the placeholder via data-placeholder
+     on the parent; the contenteditable itself needs `position: relative`
+     so the ::before sits over its content area. */
+  position: relative;
+}
+
+/*
+ * Per-element-type placeholders on empty blocks.
+ *
+ * The ghost prompt ("INT./EXT. LOCATION — DAY", "Action", "CHARACTER",
+ * etc.) ONLY shows on the active / focused empty block. Empty blocks
+ * elsewhere in the script stay visually blank so the page isn't
+ * cluttered with grey ghost text on every line that hasn't been typed
+ * into yet.
+ *
+ * Positioned absolutely inside the contenteditable so the caret sits
+ * at the start of the text column and the placeholder occupies the
+ * same space without pushing the caret. `pointer-events: none` so
+ * clicking the ghost text still hits the contenteditable underneath.
+ */
+.sp-element[data-empty='true']:focus-within > [contenteditable]::before {
+  content: attr(data-placeholder);
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--fg-muted);
+  opacity: 0.45;
+  pointer-events: none;
+  font-style: normal;
+  font-weight: inherit;
+  /* Placeholder respects the same casing rules as the real text */
+  text-transform: inherit;
+  white-space: nowrap;
+}
+
+/* ---- Per-element column geometry --------------------------------------- */
+
+/* Scene heading: full action column, ALL CAPS, blank line above. */
+.sp-element[data-type='scene_heading'] {
+  text-transform: uppercase;
+  font-weight: 400;          /* FD does NOT bold by default */
+  margin-top: 1em;           /* ~one blank line */
+  margin-bottom: 0;
+}
+
+/* Action: action column, sentence case. Blank line between paragraphs is
+   enforced by the next element's margin-top. */
+.sp-element[data-type='action'] {
+  margin-top: 1em;
+  margin-bottom: 0;
+}
+
+/* Character cue: LEFT-ALIGNED at 3.7" from the page edge (Final Draft 13
+   default; the standard WGA template position).
+   Page content box is 1.5"-7.5" (6.0" wide). Within that box:
+     character left padding = 3.7 - 1.5 = 2.2"
+     character right padding = 7.5 - 7.0 = 0.5"   (so column ends at 7.0")
+   The cue's LEFT edge always lands at 3.7" regardless of name length —
+   long names extend rightward into the column, exactly how FD13 prints.
+*/
+.sp-element[data-type='character'] {
+  text-transform: uppercase;
+  text-align: left;
+  margin-top: 1em;
+  margin-bottom: 0;
+  margin-left: 2.2in;
+  margin-right: 0.5in;
+}
+
+/* Dialogue: 2.5" left → 6.0" right (3.5" wide).
+   Within the content box (1.5"-7.5"):
+     left padding  = 2.5 - 1.5 = 1.0"
+     right padding = 7.5 - 6.0 = 1.5"
+*/
+.sp-element[data-type='dialogue'] {
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 1.0in;
+  margin-right: 1.5in;
+}
+
+/* Parenthetical: 3.1" left → 5.5" right (2.4" wide). Plain, NOT italic.
+   Within the content box (1.5"-7.5"):
+     left padding  = 3.1 - 1.5 = 1.6"
+     right padding = 7.5 - 5.5 = 2.0"
+*/
+.sp-element[data-type='parenthetical'] {
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 1.6in;
+  margin-right: 2.0in;
+}
+
+/* Transition: right-aligned to 7.5", ALL CAPS, blank line above & below. */
+.sp-element[data-type='transition'] {
+  text-transform: uppercase;
+  text-align: right;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+/* Shot: same column as scene heading. */
+.sp-element[data-type='shot'] {
+  text-transform: uppercase;
+  font-weight: 400;
+  margin-top: 1em;
+  margin-bottom: 0;
+}
+
+/* Centered: Fountain ">text<" — used for "FADE IN:" type elements that are
+   intentionally centered. */
+.sp-element[data-type='centered_text'] {
+  text-align: center;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+/* Act / Episode labels: bold + underlined + RIGHT-aligned to the same
+   column transitions use (right edge at 7.5"), with blank lines around.
+   This matches Final Draft 13's "Act Break" element default position —
+   on the right side of the page, not centered. */
+.sp-element[data-type='act_label'],
+.sp-element[data-type='episode_label'] {
+  text-transform: uppercase;
+  font-weight: 700;
+  text-align: right;
+  text-decoration: underline;
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+/* Lyric — italic, otherwise like dialogue. */
+.sp-element[data-type='lyric'] {
+  font-style: italic;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 1.0in;
+  margin-right: 1.5in;
+}
+
+/* Notes (Fountain [[notes]]) — non-printing in real Final Draft. We show
+   them subtly so writers see them at a glance. */
+.sp-element[data-type='note'] {
+  color: var(--fg-muted);
+  font-style: italic;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+/* General — fallback, full content column. */
+.sp-element[data-type='general'] {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+/* Page break sentinel — render as a thin separator. */
+.sp-element[data-type='page_break'] {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  border-top: 1px dashed var(--border);
+  height: 0;
+}
+
+/* ---- Spacing exceptions: contiguous dialogue blocks --------------------- */
+/* Inside a dialogue block (character → parenthetical → dialogue), we don't
+   want extra space above the inner elements. The adjacent-sibling selector
+   collapses the top margins for parenthetical and dialogue when they
+   immediately follow another dialogue-block element. */
+
+.sp-element[data-type='character'] + .sp-element[data-type='dialogue'],
+.sp-element[data-type='character'] + .sp-element[data-type='parenthetical'],
+.sp-element[data-type='parenthetical'] + .sp-element[data-type='dialogue'],
+.sp-element[data-type='dialogue'] + .sp-element[data-type='parenthetical'] {
+  margin-top: 0;
+}
+
+/* The very first element on a page sits at the top margin (no extra space). */
+.sp-element[data-first-on-page='true'] {
+  margin-top: 0;
+}
+
+/* ---- Multi-cam overrides ----------------------------------------------- */
+
+.multi-cam .sp-element[data-type='action'] {
+  text-transform: uppercase;
+}
+.multi-cam .sp-element[data-type='dialogue'] {
+  line-height: 2;
+}
+.multi-cam .sp-element[data-type='scene_heading'] {
+  text-decoration: underline;
+}
+
+/* ---- Focus mode -------------------------------------------------------- */
+
+.focus-mode .sp-element:not(.sp-element--active) {
+  opacity: 0.35;
+  transition: opacity 0.2s ease;
+}
+
+/* ---- Locked element gutter indicator ----------------------------------- */
+
+.sp-element[data-locked='true']::before {
+  content: '';
+  position: absolute;
+  left: -0.5in;
+  width: 2px;
+  height: 100%;
+  background: var(--accent);
+  opacity: 0.6;
+}
+
+/* ---- Editor caret ------------------------------------------------------ */
+
+.screenplay-editor [contenteditable]:focus {
+  outline: none;
+}
+
+/* Subtle inline lint underline. */
+.lint-underline-error {
+  text-decoration: underline wavy var(--error);
+  text-decoration-skip-ink: none;
+}
+.lint-underline-warning {
+  text-decoration: underline wavy var(--warning);
+  text-decoration-skip-ink: none;
+}
+.lint-underline-suggestion {
+  text-decoration: underline dotted var(--fg-muted);
+  text-underline-offset: 3px;
+}
+
+/* Smooth panel transitions. */
+.panel-slide-enter { transform: translateX(10px); opacity: 0; }
+.panel-slide-enter-active { transform: translateX(0); opacity: 1; transition: transform 0.2s, opacity 0.2s; }
+
+/* Accent button (used sparingly). */
+.btn-accent {
+  background: var(--fg);
+  color: var(--bg);
+  padding: 0.5rem 1rem;
+  border-radius: 0;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: opacity 0.15s;
+}
+.btn-accent:hover { opacity: 0.85; }
+.btn-accent:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--fg);
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.btn-ghost:hover { background: var(--bg-deep); }
+
+/* Form inputs — clean, no rounded chunkiness. */
+.input,
+.textarea,
+.select {
+  background: var(--bg-elev);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+.input:focus,
+.textarea:focus,
+.select:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 5rem;
+  line-height: 1.5;
+}
+
+label.field {
+  display: block;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
